@@ -1,0 +1,365 @@
+:root {
+	--bg: #2b2622;
+	--card: #fbf5ea;
+	--ink: #3b2c22;
+	--accent: #b9824f;
+	--accent-dark: #7a5232;
+	--purple: #a66bd6;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	height: 100%;
+	overflow: hidden;
+	background: var(--bg);
+	color: var(--ink);
+	font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+canvas {
+	display: block;
+	touch-action: none;
+	outline: none;
+}
+
+.overlay {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 16px;
+	background: rgba(20, 15, 11, 0.62);
+	backdrop-filter: blur(2px);
+	overflow-y: auto;
+}
+
+.overlay[hidden],
+[hidden] {
+	display: none !important;
+}
+
+/* The demo game shows through behind the title card. */
+.overlay.demo {
+	background: rgba(20, 15, 11, 0.38);
+	backdrop-filter: none;
+}
+
+.card {
+	width: 100%;
+	max-width: 420px;
+	max-height: 100%;
+	overflow-y: auto;
+	background: var(--card);
+	border-radius: 16px;
+	padding: 20px 20px 16px;
+	box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 4px #e8d8bd;
+	text-align: center;
+}
+
+/* Title card: the text scrolls if it must, the Start button never does. */
+#title .card {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding-bottom: 12px;
+}
+
+#title .body {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	position: relative;
+}
+
+#title .body.more {
+	-webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+	mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+}
+
+#title .foot {
+	flex: none;
+	padding-top: 8px;
+	border-top: 1px solid #eadcc4;
+}
+
+#title .body.more + .foot::before {
+	content: 'scroll for more \2193';
+	display: block;
+	margin: -4px 0 6px;
+	font-size: 11px;
+	color: #a08467;
+}
+
+.card.small {
+	max-width: 340px;
+}
+
+.sub {
+	margin: 6px 0 16px;
+	color: #5c4635;
+}
+
+.tiles {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+	margin: 12px 0 10px;
+}
+
+.tiles div {
+	background: #f1e6d3;
+	border-radius: 10px;
+	padding: 6px 4px;
+}
+
+.tiles dt {
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: #8a6d52;
+}
+
+.tiles dd {
+	margin: 2px 0 0;
+	font-size: 20px;
+	font-weight: 900;
+}
+
+/* Pause and sound: real buttons laid over the painted score bar. */
+#hud-buttons {
+	position: fixed;
+	display: flex;
+	gap: var(--gap, 6px);
+	z-index: 2;
+}
+
+#hud-buttons .icon {
+	width: var(--btn, 32px);
+	height: var(--btn, 32px);
+	padding: 0;
+	border: 0;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.1);
+	display: grid;
+	place-items: center;
+}
+
+#hud-buttons .icon:active {
+	transform: none;
+	background: rgba(255, 255, 255, 0.22);
+}
+
+#hud-buttons svg {
+	width: 62%;
+	height: 62%;
+	fill: #fff7ea;
+	stroke: #fff7ea;
+	stroke-width: 0;
+	stroke-linecap: round;
+}
+
+#hud-buttons .on,
+#hud-buttons .off {
+	fill: none;
+	stroke-width: 2.2;
+}
+
+#hud-buttons .off,
+#hud-buttons .is-muted .on,
+#hud-buttons .play,
+#hud-buttons .is-paused .bars {
+	display: none;
+}
+
+#hud-buttons .is-muted .off,
+#hud-buttons .is-paused .play {
+	display: inline;
+}
+
+h1 {
+	margin: 0;
+	font-size: 44px;
+	font-weight: 900;
+	letter-spacing: -1px;
+	color: var(--accent-dark);
+}
+
+h1 span {
+	color: var(--purple);
+}
+
+h2 {
+	margin: 4px 0 0;
+	font-size: 26px;
+	font-weight: 900;
+	color: var(--accent-dark);
+}
+
+.tag {
+	margin: 2px 0 12px;
+	font-style: italic;
+	color: #8a6d52;
+	font-size: 14px;
+}
+
+.how {
+	text-align: left;
+	font-size: 13.5px;
+	line-height: 1.45;
+	margin: 0 0 10px;
+}
+
+.keys {
+	text-align: left;
+	font-size: 12.5px;
+	line-height: 1.4;
+	margin: 0 0 14px;
+	padding-left: 18px;
+	color: #5c4635;
+}
+
+@media (hover: none) {
+	.keys .desk {
+		display: none;
+	}
+}
+
+button {
+	font: inherit;
+	font-weight: 800;
+	font-size: 18px;
+	color: #fff;
+	background: var(--accent);
+	border: 0;
+	border-bottom: 4px solid var(--accent-dark);
+	border-radius: 12px;
+	padding: 12px 28px;
+	cursor: pointer;
+}
+
+button:active {
+	transform: translateY(2px);
+	border-bottom-width: 2px;
+}
+
+button:focus-visible {
+	outline: 3px solid var(--purple);
+	outline-offset: 3px;
+}
+
+.best {
+	margin: 10px 0 14px;
+	font-size: 13px;
+	color: #8a6d52;
+}
+
+.score {
+	margin: 6px 0 0;
+	font-size: 48px;
+	font-weight: 900;
+	color: var(--ink);
+}
+
+.new {
+	margin: 0;
+	font-weight: 800;
+	color: var(--purple);
+}
+
+.stats {
+	margin: 6px 0 14px;
+	font-size: 13px;
+	color: #5c4635;
+}
+
+@media (max-height: 700px), (max-width: 380px) {
+	#title .card {
+		padding-bottom: 10px;
+	}
+	.card {
+		padding: 14px 14px 12px;
+	}
+	h1 {
+		font-size: 34px;
+	}
+	.tag {
+		font-size: 12.5px;
+		margin-bottom: 8px;
+	}
+	.how {
+		font-size: 12.5px;
+		line-height: 1.38;
+	}
+	.keys {
+		font-size: 11.5px;
+		margin-bottom: 10px;
+	}
+	button {
+		font-size: 16px;
+		padding: 10px 24px;
+	}
+	.best {
+		margin: 6px 0 4px;
+	}
+}
+
+/* Phones on their side: a wide, short card. */
+@media (max-height: 480px) and (orientation: landscape) {
+	.overlay {
+		padding: 10px;
+	}
+	.card {
+		max-width: 620px;
+	}
+	h1 {
+		font-size: 28px;
+		display: inline-block;
+		margin-right: 10px;
+	}
+	.tag {
+		display: inline-block;
+		margin: 0 0 6px;
+	}
+	.how {
+		font-size: 12px;
+		line-height: 1.35;
+	}
+	.keys {
+		font-size: 11px;
+		margin-bottom: 4px;
+	}
+	#title .foot {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 16px;
+		padding-top: 6px;
+	}
+	#title .body.more + .foot::before {
+		margin: 0;
+	}
+	#title .foot .best {
+		margin: 0;
+	}
+	.card.small h2 {
+		font-size: 22px;
+	}
+	.score {
+		font-size: 34px;
+	}
+	.tiles {
+		grid-template-columns: repeat(4, 1fr);
+		margin: 8px 0 6px;
+	}
+}

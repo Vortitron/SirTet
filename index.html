@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+	<meta name="theme-color" content="#2b2622">
+	<meta name="description" content="SirTet: a tetris for those who prefer emptying the dishwasher.">
+	<title>SirTet</title>
+	<link rel="icon" type="image/svg+xml" href="favicon.svg">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<canvas id="game" tabindex="-1" aria-label="SirTet game board"></canvas>
+
+	<div id="hud-buttons">
+		<button id="mute-btn" class="icon" type="button" aria-label="Sound on" aria-pressed="true">
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path class="spk" d="M4 9h4l5-4v14l-5-4H4z"/><path class="on" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/><path class="off" d="M16 9l6 6M22 9l-6 6"/></svg>
+		</button>
+		<button id="pause-btn" class="icon" type="button" aria-label="Pause" hidden>
+			<svg viewBox="0 0 24 24" aria-hidden="true"><path class="bars" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/><path class="play" d="M8 5l11 7-11 7z"/></svg>
+		</button>
+	</div>
+
+	<section id="title" class="overlay demo">
+		<div class="card">
+			<div class="body">
+				<h1>Sir<span>Tet</span></h1>
+				<p class="tag">A tetris for those who prefer emptying the dishwasher</p>
+				<p class="how">Matching crockery in the dishwasher clumps into tetrominoes that float up the column, pausing at each cupboard. Turn each piece the right way round and push it in sideways. The first piece claims an empty cupboard for its shape; after that every piece must fit flush with no gaps (a green outline shows where it would land, red means it will not fit), and each shape gets just one cupboard. Misses, misfits and dawdlers come back as chipped plates at the bottom. Fly the I-shaped cutlery flat into the drawer on top to clear a row, and swipe a full cupboard shut for a bonus. Don't let the dishes reach the cupboards!</p>
+				<ul class="keys">
+					<li><b>Tap</b> the piece to turn it; tap left or right of it to move (hold to slide)</li>
+					<li><b>Swipe up</b> for the next shelf, <b>swipe down</b> to go back one; <b>swipe across</b> a cupboard to shut it</li>
+					<li class="desk"><b>&larr; &rarr;</b> move, <b>&uarr;</b> / <b>X</b> turn (<b>Z</b> the other way), <b>Space</b> next shelf, <b>&darr;</b> back a shelf, <b>1-6</b> shut a door, <b>P</b> pause</li>
+				</ul>
+			</div>
+			<div class="foot">
+				<button id="start" type="button">Start emptying</button>
+				<p class="best">Best: <span id="best-title">0</span></p>
+			</div>
+		</div>
+	</section>
+
+	<section id="paused" class="overlay" hidden>
+		<div class="card small">
+			<h2>Tea break</h2>
+			<p class="sub">The dishes will wait.</p>
+			<button id="resume" type="button">Back to it</button>
+		</div>
+	</section>
+
+	<section id="over" class="overlay" hidden>
+		<div class="card small">
+			<h2>The kitchen's full!</h2>
+			<p class="score"><span id="final-score">0</span></p>
+			<p id="final-new" class="new" hidden>New best!</p>
+			<dl class="tiles">
+				<div><dt>Put away</dt><dd id="final-stored">0</dd></div>
+				<div><dt>Level</dt><dd id="final-level">1</dd></div>
+				<div><dt>Best run</dt><dd id="final-streak">0</dd></div>
+				<div><dt>Best</dt><dd id="final-best">0</dd></div>
+			</dl>
+			<p id="final-stats" class="stats"></p>
+			<button id="again" type="button">Another load</button>
+		</div>
+	</section>
+
+	<script type="module" src="src/main.js"></script>
+</body>
+</html>
