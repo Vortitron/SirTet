@@ -360,3 +360,26 @@ test('the autopilot sinks back for a shelf it has passed', async () => {
 	p.state = 'ceiling';
 	assert.equal(advise(g), 'sink');
 });
+
+test('turning does not creep sideways and keeps a piece on its wall', () => {
+	const width = (p) => Math.max(...p.cells.map((c) => c[0])) + 1;
+	for (const type of TYPES) {
+		for (const dir of [1, -1]) {
+			for (const start of ['middle', 'left', 'right']) {
+				const g = new Game(1);
+				g.reset(1);
+				const p = { id: 99, type, kind: 0, cells: baseShape(type), x: 4, y: 10, state: 'rise', t: 0 };
+				g.flying = [p];
+				if (start === 'left') p.x = 0;
+				if (start === 'right') p.x = W - width(p);
+				const x0 = p.x;
+				for (let i = 0; i < 8; i++) {
+					assert.ok(g.rotate(dir), `${type} turns`);
+					if (start === 'left') assert.equal(p.x, 0, `${type} stays on the left wall`);
+					if (start === 'right') assert.equal(p.x + width(p), W, `${type} stays on the right wall`);
+					if (i % 4 === 3) assert.equal(p.x, x0, `${type} is back where it started after four turns`);
+				}
+			}
+		}
+	}
+});

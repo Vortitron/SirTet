@@ -60,6 +60,9 @@ const app = {
 		titleEl.hidden = true;
 		overEl.hidden = true;
 		pauseEl.hidden = true;
+		// A game-over card still on its way belongs to the old game.
+		clearTimeout(overTimer);
+		overTimer = 0;
 		overShown = false;
 		this.sound.unlock();
 		syncButtons();
@@ -74,6 +77,11 @@ const app = {
 		if (g.mode === 'paused') $('resume').focus({ preventScroll: true });
 		else canvas.focus({ preventScroll: true });
 		syncButtons();
+	},
+	// Enter only starts a new game once the game-over card is up, so a
+	// stray press in the moment after the stack tops out cannot skip it.
+	canRestart() {
+		return this.demo || (this.game.mode === 'over' && !overEl.hidden);
 	},
 	toggleMute() {
 		this.renderer.muted = this.sound.toggle();
@@ -141,13 +149,19 @@ document.addEventListener('visibilitychange', () => {
 	if (document.hidden && !app.demo && app.game.mode === 'playing') app.togglePause();
 });
 
-function showOver() {
-	const g = app.game;
+// Record the best score the moment a game ends, not when the card shows.
+function recordBest(g) {
 	const newBest = g.score > app.best;
 	if (newBest) {
 		app.best = g.score;
 		saveBest(g.score);
 	}
+	return newBest;
+}
+
+function showOver(g, newBest) {
+	overTimer = 0;
+	if (app.game !== g || app.demo) return;
 	$('final-score').textContent = fmt(g.score);
 	$('final-stored').textContent = fmt(g.stored);
 	$('final-level').textContent = String(g.level);
@@ -180,6 +194,7 @@ function runDemo(dt) {
 
 let last = performance.now();
 let overShown = false;
+let overTimer = 0;
 function loop(now) {
 	const dt = Math.min(0.05, (now - last) / 1000);
 	last = now;
@@ -196,8 +211,9 @@ function loop(now) {
 		}
 		if (g.mode === 'over' && !overShown) {
 			overShown = true;
+			const newBest = recordBest(g);
 			syncButtons();
-			setTimeout(showOver, 700);
+			overTimer = setTimeout(() => showOver(g, newBest), 700);
 		}
 	}
 	app.renderer.frame(app.game.mode === 'paused' ? 0 : dt);

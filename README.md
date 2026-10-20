@@ -70,6 +70,13 @@ the choices made, aiming for the most fun game:
   pieces lying flat (exactly two squares high) fit through a cupboard
   opening; anything else just bumps the side. Overshot a shelf? Drop back
   down to it (swipe down or press Down).
+- **Turning.** A piece turns on the spot: four turns bring it back to
+  exactly where it started, and a piece against a wall stays against that
+  wall as it turns, so the right-hand cupboards are as easy to fill as the
+  left. On touch, a press beside the column that would push the piece into
+  a cupboard waits a moment to see whether it is a tap or the start of a
+  swipe, so swiping up for the next shelf never puts a piece away by
+  mistake.
 - **Patience.** Once a piece reaches the cupboards a ring next to it starts
   emptying. When the ring runs out the piece is sent back ("Too slow!").
   Sinking back a shelf does not refill it. The ring starts at about six and
@@ -111,7 +118,9 @@ the choices made, aiming for the most fun game:
   accident.
 - **Game over.** When the dishes stack up into the cupboard zone (the dashed
   red line, which pulses as they get close), the kitchen is full and the
-  game ends, just as in normal tetris.
+  game ends, just as in normal tetris. The best score is saved as soon as
+  the game ends, and Enter only starts a new game once the score card is
+  showing, so a stray key press cannot skip it.
 - **Scoring.** Every piece put away scores (20 + 10 x run) x level, where
   the run counts pieces put away in a row without a mistake (capped at
   +100), and a piece that leaves its shelf level ("Neat!") adds 30 x level.

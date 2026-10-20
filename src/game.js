@@ -426,7 +426,15 @@ export class Game {
 		const cells = dir > 0 ? rotateCW(p.cells) : rotateCCW(p.cells);
 		const a = size(p.cells);
 		const b = size(cells);
-		const baseX = p.x + Math.floor((a.w - b.w) / 2);
+		// Keep the turn where the player put the piece. A piece against a
+		// wall stays against it, so cupboards on either side are equally
+		// easy to fill. Elsewhere the half-column shift rounds towards zero,
+		// so a width change and its reverse cancel out and four turns bring
+		// the piece back to where it started instead of creeping left.
+		let baseX;
+		if (p.x + a.w >= W) baseX = W - b.w;
+		else if (p.x <= 0) baseX = 0;
+		else baseX = p.x + Math.trunc((a.w - b.w) / 2);
 		if (p.y + b.h > H) return false;
 		for (const k of [0, -1, 1, -2, 2]) {
 			const nx = baseX + k;

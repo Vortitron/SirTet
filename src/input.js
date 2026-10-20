@@ -6,18 +6,21 @@
 // shut its door.
 //
 // A press on a cupboard could be a steering tap or the start of a door
-// swipe, so it waits a moment (TAP_WAIT) before it steers. A normal tap is
+// swipe, so it waits a moment (TAP_WAIT) before it steers. So does any
+// press whose step would push the piece into a cupboard, in case it is
+// the start of a swipe to the next shelf. A normal tap is
 // over before then and steers on release; a finger that stays down starts
 // steering and repeats like anywhere else. Only a sideways swipe shuts a
 // door, so holding to slide never shuts one by accident.
 import { size } from './pieces.js';
 import { cupboardAt } from './layout.js';
+import { W } from './game.js';
 
 const REPEAT_DELAY = 0.24;
 const REPEAT_EVERY = 0.075;
 const SWIPE = 28; // px of vertical drag for next/previous shelf
 const DOOR_SWIPE = 24; // px of sideways drag across a cupboard
-const TAP_WAIT = 0.12; // s a press on a cupboard waits before steering
+const TAP_WAIT = 0.12; // s a press on a cupboard, or a wall push, waits before steering
 
 export class Input {
 	constructor(canvas, app) {
@@ -56,7 +59,7 @@ export class Input {
 		if ((code === 'Enter' || code === 'Space') && e.target && e.target.tagName === 'BUTTON') return;
 		if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'].includes(code)) e.preventDefault();
 		if (code === 'Enter' && (app.demo || g.mode === 'over')) {
-			app.start();
+			if (app.canRestart()) app.start();
 			return;
 		}
 		if (code === 'Enter' && g.mode === 'paused') {
@@ -145,8 +148,18 @@ export class Input {
 		}
 		const cup = cupboardAt(app.renderer.L, x, y);
 		this.ptr = { id: e.pointerId, x0: x, y0: y, x, y, t: 0, cup, zone: this.zoneFor(x, y), acted: false, done: false, nextRepeat: REPEAT_DELAY };
-		// Away from the cupboards a tap acts at once, so it feels snappy.
-		if (cup === -1) this.steer(this.ptr);
+		// Away from the cupboards a tap acts at once, so it feels snappy,
+		// unless that step would push the piece into a cupboard: a push can
+		// put the piece away or send it back, which a swipe cannot undo, so
+		// it waits until the press is known to be a tap.
+		if (cup === -1 && !this.pushesWall(this.ptr.zone)) this.steer(this.ptr);
+	}
+
+	// Would a step towards this side push the active piece against a wall?
+	pushesWall(zone) {
+		const p = this.game.active;
+		if (!p || (zone !== 'left' && zone !== 'right')) return false;
+		return zone === 'left' ? p.x <= 0 : p.x + size(p.cells).w >= W;
 	}
 
 	steer(p) {
