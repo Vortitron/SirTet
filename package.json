@@ -1,0 +1,10 @@
+{
+	"name": "sirtet",
+	"private": true,
+	"type": "module",
+	"description": "A tetris for those who prefer emptying the dishwasher",
+	"scripts": {
+		"test": "node --test tests/*.test.js",
+		"serve": "python3 -m http.server 8080"
+	}
+}
